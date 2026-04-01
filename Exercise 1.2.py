@@ -51,3 +51,4 @@ if st.session_state.expenses:
     st.markdown(f"### Total Expenses: RM {total:.2f}")
 else:
     st.info("No expenses recorded yet.")
+  
