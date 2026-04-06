@@ -1,54 +1,46 @@
 import streamlit as st
-import pandas as pd
 
-# Initialize session state for expenses if it doesn't exist
-if 'expenses' not in st.session_state:
-    st.session_state.expenses = []
+st.title("🍔 Food Ordering System")
 
-# App Header
-st.title("💰 Personal Budget Tracker")
+# Input fields
+customer_name = st.text_input("Enter Customer Name")
 
-# 1. & 2. Input Form
-st.header("Add a New Expense")
+food_menu = {
+    "Nasi Lemak": 5,
+    "Chicken Chop": 12,
+    "Burger": 8
+}
 
-with st.form("expense_form", clear_on_submit=True):
-    date = st.date_input("Date")
-    item = st.text_input("Expense Item")
-    amount_str = st.text_input("Amount Spent (RM)")
-    submit_button = st.form_submit_button("Add Expense")
+food_selection = st.selectbox(
+    "Select Food",
+    list(food_menu.keys())
+)
 
-    if submit_button:
-        # 3. Exception Handling for validation
-        try:
-            amount = float(amount_str)
-            if amount < 0:
-                raise ValueError("The amount cannot be negative.")
-            
-            # Save the expense
-            new_expense = {
-                "Date": date,
-                "Expense Item": item,
-                "Amount Spent (RM)": amount
-            }
-            st.session_state.expenses.append(new_expense)
-            st.success(f"✅ Expense '{item}' added successfully!")
-            
-        except ValueError:
-            st.error("⚠️ Please enter a valid positive number for the amount.")
+quantity = st.number_input("Enter Quantity", min_value=0, step=1)
 
-# 4. Display Summary
-st.header("Expense Summary")
+# Button
+if st.button("Order"):
+    try:
+        # Validation
+        if customer_name.strip() == "":
+            raise ValueError("Customer name cannot be empty!")
 
-if st.session_state.expenses:
-    # Create DataFrame for display
-    df = pd.DataFrame(st.session_state.expenses)
-    
-    # Display the table
-    st.table(df)
-    
-    # Calculate and display total
-    total = df["Amount Spent (RM)"].sum()
-    st.markdown(f"### Total Expenses: RM {total:.2f}")
-else:
-    st.info("No expenses recorded yet.")
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than 0!")
+
+        price = food_menu[food_selection]
+        total_price = price * quantity
+
+        # Display result
+        st.success("✅ Order Successful!")
+        st.write("### Order Details")
+        st.write(f"👤 Name: {customer_name}")
+        st.write(f"🍽️ Food: {food_selection}")
+        st.write(f"🔢 Quantity: {quantity}")
+        st.write(f"💰 Total Price: RM {total_price:.2f}")
+
+    except ValueError as ve:
+        st.error(f"❌ Error: {ve}")
+    except Exception as e:
+        st.error("❌ Unexpected error occurred!")
   
